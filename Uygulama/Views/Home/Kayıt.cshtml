@@ -1,0 +1,99 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        .custom-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+
+        .custom-button {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="w3-container form-container">
+    <div class="w3-card-4 w3-padding-large">
+        <h2 class="w3-text-teal">Kayıt Ol</h2>
+
+        <form id="registerForm" class="w3-container">
+            <label for="Ad">Ad</label>
+            <input type="text" id="Ad" name="Ad" class="w3-input w3-border custom-input" required>
+
+            <label for="Soyad">Soyad</label>
+            <input type="text" id="Soyad" name="Soyad" class="w3-input w3-border custom-input" required>
+
+            <label for="KullaniciAdi">Kullanıcı Adı</label>
+            <input type="text" id="KullaniciAdi" name="KullaniciAdi" class="w3-input w3-border custom-input" required>
+
+            <label for="Mail">Mail</label>
+            <input type="email" id="Mail" name="Mail" class="w3-input w3-border custom-input" required>
+
+            <label for="Sifre">Şifre</label>
+            <input type="password" id="Sifre" name="Sifre" class="w3-input w3-border custom-input" required>
+
+            <button type="submit" class="w3-button w3-teal w3-round-large custom-button">Kayıt Ol</button>
+        </form>
+
+        <p id="responseMessage" class="w3-text-red"></p>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    
+   $(document).ready(function () {
+    $('#registerForm').submit(function (event) {
+        event.preventDefault(); 
+        
+        var formData = {
+            Ad: $('#Ad').val(),
+            Soyad: $('#Soyad').val(),
+            KullaniciAdi: $('#KullaniciAdi').val(),
+            Mail: $('#Mail').val(),
+            Sifre: $('#Sifre').val()
+        };
+
+        $.ajax({
+            url: '/Home/Register', 
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    $('#responseMessage').text('Kayıt başarıyla tamamlandı.').removeClass('w3-text-red').addClass('w3-text-green');
+                    
+                    window.location.href = '/Home/SiteEkle';
+                } else {
+                    $('#responseMessage').text(response.message).addClass('w3-text-red');
+                }
+            },
+            error: function () {
+                $('#responseMessage').text('Kayıt sırasında bir hata oluştu.').addClass('w3-text-red');
+            }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

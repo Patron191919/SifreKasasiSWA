@@ -1,0 +1,414 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Ekle</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        .custom-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+
+        .custom-button {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .form-container {
+            float: left;
+            width: 40%;
+            margin-top: 50px;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            width: calc(100% - 40px);
+            float: left;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .table-container {
+            float: right;
+            width: 55%;
+            margin-top: 50px;
+            height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid black;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .table-container th, .table-container td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .table-container th {
+            background-color: #f1f1f1;
+        }
+
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1),
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2),
+        .table-container th:nth-child(3),
+        .table-container td:nth-child(3) {
+            width: 300px;
+        }
+
+        .table-container th:nth-child(4),
+        .table-container td:nth-child(4) {
+            width: 100px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: space-evenly;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .edit-button {
+            background-color: #4CAF50;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+        }
+
+        .go-button {
+            background-color: #008CBA;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .table-title {
+            text-align: left;
+            font-size: 24px;
+            font-weight: bold;
+            color: teal;
+            margin-top: 50px;
+            margin-bottom: 10px;
+            margin-left: 220px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="w3-container form-container">
+    <h2 class="w3-text-teal">Site Ekle</h2>
+
+    <form method="post" action="/Home/Logout" class="w3-right">
+        <button type="submit" class="w3-button w3-red w3-round-large">Çıkış Yap</button>
+    </form>
+
+    <form id="siteEkleForm" class="w3-container w3-card-4 w3-padding-large">
+        <label for="siteAdi">Site Adı</label>
+        <input type="text" id="siteAdi" name="siteAdi" class="w3-input w3-border custom-input" required>
+
+        <label for="siteKullaniciAdi">Kullanıcı Adı</label>
+        <input type="text" id="siteKullaniciAdi" name="siteKullaniciAdi" class="w3-input w3-border custom-input" required>
+
+        <label for="siteSifre">Şifre</label>
+        <div class="password-container">
+            <input type="password" id="siteSifre" name="siteSifre" class="w3-input w3-border custom-input" required>
+            <span class="password-toggle" onclick="togglePasswordVisibility('siteSifre')">
+                <img src="https://img.icons8.com/ios-filled/50/000000/visible.png" alt="Göz" width="20">
+            </span>
+        </div>
+
+        <button type="submit" class="w3-button w3-teal w3-round-large custom-button">Ekle</button>
+    </form>
+
+    <p id="responseMessage" class="w3-text-red"></p>
+</div>
+
+<div class="table-title">Eklenen Siteler</div>
+
+<div class="table-container">
+    <table class="w3-table-all w3-hoverable w3-striped w3-bordered">
+        <thead>
+            <tr class="w3-light-grey">
+                <th>Site Adı</th>
+                <th>Kullanıcı Adı</th>
+                <th>Şifre</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="siteListesi">
+        </tbody>
+    </table>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content w3-card-4">
+        <span class="close" onclick="document.getElementById('editModal').style.display='none'">&times;</span>
+        <h3>Site Düzenle</h3>
+        <form id="updateForm">
+            <input type="hidden" id="editSiteId">
+            <label for="editSiteAdi">Site Adı</label>
+            <input type="text" id="editSiteAdi" name="editSiteAdi" class="w3-input w3-border custom-input" required>
+
+            <label for="editSiteKullaniciAdi">Kullanıcı Adı</label>
+            <input type="text" id="editSiteKullaniciAdi" name="editSiteKullaniciAdi" class="w3-input w3-border custom-input" required>
+
+            <label for="editSiteSifre">Şifre</label>
+            <div class="password-container">
+                <input type="password" id="editSiteSifre" name="editSiteSifre" class="w3-input w3-border custom-input" required>
+                <span class="password-toggle" onclick="togglePasswordVisibility('editSiteSifre')">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/visible.png" alt="Göz" width="20">
+                </span>
+            </div>
+
+            <button type="submit" class="w3-button w3-teal w3-round-large custom-button">Güncelle</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        getSiteListesi();
+
+       
+        $('#siteEkleForm').submit(function (event) {
+            event.preventDefault();
+
+            var formData = {
+                siteAdi: $('#siteAdi').val(),
+                siteKullaniciAdi: $('#siteKullaniciAdi').val(),
+                siteSifre: $('#siteSifre').val()
+            };
+
+            $.ajax({
+                url: '/Home/AddSite',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#responseMessage').text('Site başarıyla eklendi.').show();
+                        $('#siteEkleForm').trigger('reset');
+                        getSiteListesi();
+                    } else {
+                        $('#responseMessage').text(response.message).show();
+                    }
+                },
+                error: function () {
+                    $('#responseMessage').text('Bir hata oluştu.').show();
+                }
+            });
+        });
+
+        
+        function getSiteListesi() {
+            $.ajax({
+                url: '/Home/GetSiteler',
+                type: 'GET',
+                success: function (data) {
+                    $('#siteListesi').empty();
+                    $.each(data, function (index, site) {
+                        $('#siteListesi').append('<tr><td>' + site.siteAdi + '</td><td>' + site.siteKullaniciAdi + '</td><td><span class="password-cell" onclick="togglePassword(this)" data-hidden="true" data-original-password="' + site.siteSifre + '">xxxxxxx</span></td><td class="action-buttons"><button class="edit-button" onclick="editSite(' + site.id + ')">Düzenle</button><button class="delete-button" onclick="deleteSite(' + site.id + ')">Sil</button><button class="go-button" onclick="autoLogin(\'' + site.siteAdi + '\', \'' + site.siteKullaniciAdi + '\', \'' + site.siteSifre + '\')">Git</button></td></tr>');
+                    });
+                },
+                error: function () {
+                    $('#responseMessage').text('Siteler yüklenirken bir hata oluştu.').show();
+                }
+            });
+        }
+
+        
+        window.togglePassword = function (element) {
+            var isHidden = $(element).data("hidden");
+            var originalPassword = $(element).data("original-password");
+
+            if (isHidden) {
+                $(element).text(originalPassword);
+                $(element).data("hidden", false);
+            } else {
+                $(element).text("xxxxxxx");
+                $(element).data("hidden", true);
+            }
+        };
+
+        
+        window.togglePasswordVisibility = function (inputId) {
+            var passwordInput = document.getElementById(inputId);
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+            } else {
+                passwordInput.type = "password";
+            }
+        };
+
+       
+        window.editSite = function (id) {
+            $.ajax({
+                url: '/Home/GetSiteById/' + id,
+                type: 'GET',
+                success: function (site) {
+                    $('#editSiteId').val(site.id);
+                    $('#editSiteAdi').val(site.siteAdi);
+                    $('#editSiteKullaniciAdi').val(site.siteKullaniciAdi);
+                    $('#editSiteSifre').val(site.siteSifre);
+                    $('#editModal').show();
+                },
+                error: function () {
+                    $('#responseMessage').text('Site düzenlenirken bir hata oluştu.').show();
+                }
+            });
+        };
+
+        
+        $('#updateForm').submit(function (event) {
+            event.preventDefault();
+
+            var formData = {
+                id: $('#editSiteId').val(),
+                siteAdi: $('#editSiteAdi').val(),
+                siteKullaniciAdi: $('#editSiteKullaniciAdi').val(),
+                siteSifre: $('#editSiteSifre').val()
+            };
+
+            $.ajax({
+                url: '/Home/UpdateSite',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#responseMessage').text('Site başarıyla güncellendi.').show();
+                        $('#editModal').hide();
+                        getSiteListesi();
+                    } else {
+                        $('#responseMessage').text(response.message).show();
+                    }
+                },
+                error: function () {
+                    $('#responseMessage').text('Güncelleme sırasında bir hata oluştu.').show();
+                }
+            });
+        });
+
+        
+        window.deleteSite = function (id) {
+            if (confirm('Bu siteyi silmek istediğinizden emin misiniz?')) {
+                $.ajax({
+                    url: '/Home/DeleteSite',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#responseMessage').text('Site başarıyla silindi.').show();
+                            getSiteListesi();
+                        } else {
+                            $('#responseMessage').text(response.message).show();
+                        }
+                    },
+                    error: function () {
+                        $('#responseMessage').text('Silme işlemi sırasında bir hata oluştu.').show();
+                    }
+                });
+            }
+        };
+
+        
+        window.autoLogin = function (siteAdi, siteKullaniciAdi, siteSifre) {
+            $.ajax({
+                url: '/Home/AutoLogin',
+                type: 'POST',
+                data: {
+                    siteAdi: siteAdi,
+                    siteKullaniciAdi: siteKullaniciAdi,
+                    siteSifre: siteSifre
+                },
+                success: function (response) {
+                    if (response.success) {
+                        console.log("AutoLogin isteği gönderiliyor:", siteAdi, siteKullaniciAdi, siteSifre);
+                        
+                        
+                        window.postMessage({
+                            type: "autoLoginRequest",
+                            action: "autoLogin",
+                            url: siteAdi,
+                            username: siteKullaniciAdi,
+                            password: siteSifre
+                        }, "*");
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Otomatik giriş yapılamadı.');
+                }
+            });
+        };
+    });
+</script>
+
+</body>
+</html>

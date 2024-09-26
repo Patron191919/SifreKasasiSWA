@@ -1,0 +1,33 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş ve Kayıt</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        .custom-button {
+            width: 200px;
+            height: 100px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div style="text-align: center; padding-top: 100px;">
+    <button onclick="window.location.href='@Url.Action("Login", "Home")'" class="w3-button w3-teal w3-round-large custom-button">
+        Giriş Yap
+    </button>
+    <br><br>
+    <button onclick="window.location.href='@Url.Action("Kayıt", "Home")'" class="w3-button w3-blue w3-round-large custom-button">
+        Kaydol
+    </button>
+</div>
+
+</body>
+</html>

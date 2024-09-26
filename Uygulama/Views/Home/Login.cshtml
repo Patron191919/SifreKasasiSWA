@@ -1,0 +1,85 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        .custom-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+
+        .custom-button {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="w3-container form-container">
+    <div class="w3-card-4 w3-padding-large">
+        <h2 class="w3-text-teal">Giriş Yap</h2>
+
+        <form id="loginForm" class="w3-container">
+            <label for="username">Kullanıcı Adı</label>
+            <input type="text" id="username" name="username" class="w3-input w3-border custom-input" required>
+
+            <label for="password">Şifre</label>
+            <input type="password" id="password" name="password" class="w3-input w3-border custom-input" required>
+
+            <button type="submit" class="w3-button w3-teal w3-round-large custom-button">Giriş Yap</button>
+        </form>
+
+        <p id="responseMessage" class="w3-text-red"></p>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#loginForm').submit(function (event) {
+            event.preventDefault(); 
+
+            var formData = {
+                username: $('#username').val(),
+                password: $('#password').val()
+            };
+
+            $.ajax({
+                url: '/Home/LoginUser',  
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#responseMessage').text('Giriş başarılı, yönlendiriliyorsunuz...').removeClass('w3-text-red').addClass('w3-text-green');
+                        window.location.href = '/Home/SiteEkle';  
+                    } else {
+                        $('#responseMessage').text('Giriş başarısız: ' + response.message).addClass('w3-text-red');
+                    }
+                },
+                error: function () {
+                    $('#responseMessage').text('Bir hata oluştu, lütfen tekrar deneyin.').addClass('w3-text-red');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
